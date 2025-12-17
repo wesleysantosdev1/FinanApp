@@ -2,6 +2,7 @@ import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
 import Homes from "../pages/Homes";
+import New from "../pages/New";
 
 const AppDrawer = createDrawerNavigator();
 
@@ -14,6 +15,11 @@ function AppRoutes(){
                 backgroundColor: '#fff',
                 paddingTop: 20,
             }, 
+
+            drawerItemStyle: {
+                marginVertical: 8,
+                borderRadius: 8
+            },
             drawerActiveBackgroundColor: '#3b3dbf',
             drawerActiveTintColor: '#fff', 
             drawerInactiveBackgroundColor: '#f0f2ff', 
@@ -22,6 +28,7 @@ function AppRoutes(){
         }}
         >
             <AppDrawer.Screen name="Home" component={Homes} />
+            <AppDrawer.Screen name="Registar" component={New} />
         </AppDrawer.Navigator>
     )
 }
