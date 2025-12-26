@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { TouchableOpacity} from 'react-native';
+import { TouchableOpacity, Modal} from 'react-native';
 
 import { Background, ListBalance, Area, Title, List } from './styles';
 
@@ -12,19 +12,23 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import Header from "../../components/Header";
 import HistoricoList from "../../components/HistoricoList";
+import CalendarModal from "../../components/CalendarModal";
+import { da } from "date-fns/locale";
 
 
 export default function Homes(){
     const isFocused = useIsFocused();
     const [listBalance, setListBalance] = useState([]);
     const [dataMovements, setDataMoviments] = useState(new Date());
-
     const [moviments, setMoviments] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false)
 
     useEffect(() => {
         let isActive = true;
         async function getMovements(){
-            let dateFormated = format(dataMovements, 'dd/MM/yyyy');
+            let date = new Date(dataMovements)
+            let onlyDate = date.valueOf() + date.getTimezoneOffset() * 60 * 1000;
+            let dateFormated = format(onlyDate, 'dd/MM/yyyy');
 
             const receives = await api.get('/receives', {
                 params: {
@@ -61,6 +65,10 @@ export default function Homes(){
         }
     }
 
+    function filterDateMoviments(dateSelected){
+        setDataMoviments(dateSelected);
+    }
+
     return(
         <Background>
             <Header 
@@ -75,7 +83,7 @@ export default function Homes(){
             />
 
             <Area>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={ () => setModalVisible(true) }>
                     <MaterialIcons name="event" color="#121212" size={30} />
                 </TouchableOpacity>
                 <Title> Ultimas Movimentações</Title>
@@ -88,6 +96,17 @@ export default function Homes(){
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 20}}
             />
+
+            <Modal
+            visible={modalVisible}
+            animationType="fade" 
+            transparent={true}
+            >
+                <CalendarModal 
+                setVisible={ () => setModalVisible(false)}
+                handleFilter={filterDateMoviments}
+                />
+            </Modal>
 
         </Background>
     );
