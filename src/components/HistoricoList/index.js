@@ -4,7 +4,7 @@ import { TouchableWithoutFeedback, Alert } from "react-native";
 
 import Feather from "react-native-vector-icons/Feather";
 
-export default function HistoricoList({ data, deleteItem }){
+export default function HistoricoList({ data, deleteItem, showDetails }){
 
     function handleDeleteItem(){
         Alert.alert(
@@ -26,6 +26,7 @@ export default function HistoricoList({ data, deleteItem }){
     return(
         <TouchableWithoutFeedback
         onLongPress={handleDeleteItem}
+        onPress={ () => showDetails(data)}
         >
             <Container>
                 <Tipo>

@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { TouchableOpacity, Modal} from 'react-native';
+import { TouchableOpacity, Modal,  View, Text, Image} from 'react-native';
 
 import { Background, ListBalance, Area, Title, List } from './styles';
 
@@ -13,7 +13,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Header from "../../components/Header";
 import HistoricoList from "../../components/HistoricoList";
 import CalendarModal from "../../components/CalendarModal";
-import { da } from "date-fns/locale";
+import DetailModal from "../../components/DetailModal";
 
 
 export default function Homes(){
@@ -22,6 +22,9 @@ export default function Homes(){
     const [dataMovements, setDataMoviments] = useState(new Date());
     const [moviments, setMoviments] = useState([]);
     const [modalVisible, setModalVisible] = useState(false)
+    const [detailModalVisible, setDetailModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [detailVisible, setDetailVisible] = useState(false);
 
     useEffect(() => {
         let isActive = true;
@@ -69,6 +72,11 @@ export default function Homes(){
         setDataMoviments(dateSelected);
     }
 
+    function handleShowDetails(item) {
+        setSelectedItem(item);
+        setDetailModalVisible(true);
+    }
+
     return(
         <Background>
             <Header 
@@ -92,10 +100,29 @@ export default function Homes(){
             <List 
             data={moviments}
             keyExtractor={ item => item.id}
-            renderItem={ ({ item }) => <HistoricoList data={item}  deleteItem={handleDelete} />}
+            renderItem={ ({ item }) => ( 
+                <TouchableOpacity onPress={() => handleShowDetails(item)}>
+                    <HistoricoList 
+                        data={item}  
+                        deleteItem={handleDelete} 
+                        showDetails={ (item) => handleShowDetails(item) }
+                    />
+                </TouchableOpacity>
+            )}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 20}}
             />
+
+            <Modal
+            visible={modalVisible}
+            animationType="fade"
+            transparent={true}
+            >
+                <DetailModal 
+                data={selectedItem}
+                setVisible={ () => setDetailModalVisible(false)}
+                />
+            </Modal>
 
             <Modal
             visible={modalVisible}

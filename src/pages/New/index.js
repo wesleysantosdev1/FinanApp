@@ -2,7 +2,8 @@ import React, {useState} from "react";
 import { Background, Input, SubmitButton, SubmitText } from "./styles";
 
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
+import { TouchableWithoutFeedback, Keyboard, Alert, TouchableOpacity, Image } from "react-native";
+import * as ImagePicker from 'expo-image-picker';
 
 import Header from "../../components/Header";
 import RegisterTypes from "../../components/RegisterTypes";
@@ -17,6 +18,7 @@ export default function New(){
     const [labelInput, setLabelInput] = useState('');
     const [valueInput, setValueInput] = useState('');
     const [type, setType] = useState('receita');
+    const [imgUri, setImgUri] = useState(null);
 
     function handleSubmit(){
         Keyboard.dismiss();
@@ -39,6 +41,19 @@ export default function New(){
                 }
             ]
         )
+    }
+
+    async function pickImage(){
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true, 
+            aspect: [4, 3],
+            quality: 0.7,
+        });
+
+        if (!result.canceled) {
+            setImgUri(result.assets[0].uri);
+        }
     }
 
     async function handleAdd() {
@@ -76,6 +91,23 @@ export default function New(){
                     value={valueInput}
                     onChangeText={ (text) => setValueInput(text)}
                     />
+
+                    <TouchableOpacity
+                    onPress={pickImage}
+                    style={{ backgroundColor: '#fff', width: '90%', height: 50, justifyContent: 'center', alignItems: 'center', borderRadius: 8, marginBottom: 25 }}
+                    >
+                        <SubmitText
+                        style={{ color: '#5e5e5eff' }}
+                        >
+                            {imgUri ? " Foto selecionada " : "Adicinar foto (Opcional)"}
+                        </SubmitText>
+                    </TouchableOpacity>
+
+                    {imgUri && (
+                        <Image 
+                        source={{ uri: imgUri }} style={{ width: 100, height: 100, borderRadius: 8, marginBottom: 10 }}
+                        />
+                    )}
 
                     <RegisterTypes type={type} sendTypeChanged={ ( item ) => setType( item )} />
 
