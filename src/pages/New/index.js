@@ -20,6 +20,7 @@ export default function New(){
     const [type, setType] = useState('receita');
     const [imgUri, setImgUri] = useState(null);
 
+
     function handleSubmit(){
         Keyboard.dismiss();
         if (isNaN(parseFloat(valueInput)) || type === null){
@@ -43,6 +44,29 @@ export default function New(){
         )
     }
 
+
+    function handleImagePicker(){
+        Alert.alert(
+            "Selecionar Foto",
+            "De onde voce deseja escolher a imagem?",
+            [
+                {
+                    text: "Camera",
+                    onPress: () => takePhoto()
+                }, 
+                {
+                    text: "Galeria",
+                    onPress: () => pickImage(),
+                },
+                {
+                    text: "Cancelar",
+                    style: 'cancel'
+                }
+            ]
+        );
+    }
+
+
     async function pickImage(){
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
@@ -55,6 +79,27 @@ export default function New(){
             setImgUri(result.assets[0].uri);
         }
     }
+
+
+    async function takePhoto(){
+        const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+        if (permissionResult.granted === false) {
+            alert("Você recusou a permissão para acessar a câmera!");
+            return;
+        }
+
+        let result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.7,
+        });
+
+        if (!result.canceled) {
+            setImgUri(result.assets[0].uri);
+        }
+    }
+
 
     async function handleAdd() {
         Keyboard.dismiss();
@@ -72,6 +117,7 @@ export default function New(){
         setImgUri(null);
         navigation.navigate('Home')
     }
+
 
     return(
         <TouchableWithoutFeedback onPress={ () => Keyboard.dismiss()}>
@@ -95,7 +141,7 @@ export default function New(){
                     />
 
                     <TouchableOpacity
-                    onPress={pickImage}
+                    onPress={handleImagePicker}
                     style={{ backgroundColor: '#fff', width: '90%', height: 50, justifyContent: 'center', alignItems: 'center', borderRadius: 8, marginBottom: 25 }}
                     >
                         <SubmitText
