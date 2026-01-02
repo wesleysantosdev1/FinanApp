@@ -63,11 +63,13 @@ export default function New(){
             description: labelInput,
             value: Number(valueInput),
             type: type,
-            date: format(new Date(), 'dd/MM/yyyy')
+            date: format(new Date(), 'dd/MM/yyyy'),
+            image: imgUri
         })
 
         setLabelInput('');
         setValueInput('');
+        setImgUri(null);
         navigation.navigate('Home')
     }
 

@@ -9,6 +9,7 @@ import {
     Input, 
     SubmitButton, 
     SubmitText, 
+    Logo,
 } from '../SignIn/styles'
 
 export default function SignUp(){
@@ -30,6 +31,10 @@ export default function SignUp(){
             behavior={Platform.OS === "ios" ? 'padding' : ''}
             enabled
             >
+
+                <Logo 
+                source={require('../../assets/Logo.png')}
+                />
 
             <AreaInput>
                 <Input 

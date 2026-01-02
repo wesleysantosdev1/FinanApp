@@ -20,12 +20,12 @@ export const AreaInput = styled.View`
 `;
 
 export const Input = styled.TextInput`
-    background-color: #fff;
+    background-color: #121212;
     width: 90%;
     font-size: 17px;
     padding: 10px;
     border-radius: 8px;
-    color: #121212;
+    color: #fff;
     margin-bottom: 20px;
 `;
 
