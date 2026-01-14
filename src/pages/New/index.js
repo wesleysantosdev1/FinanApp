@@ -11,6 +11,7 @@ import RegisterTypes from "../../components/RegisterTypes";
 import api from '../../services/api';
 import { format } from "date-fns";
 import { useNavigation } from "@react-navigation/native";
+import SignatureModal from "../../components/SignatureModal";
 
 export default function New(){
     const navigation = useNavigation();
@@ -19,6 +20,15 @@ export default function New(){
     const [valueInput, setValueInput] = useState('');
     const [type, setType] = useState('receita');
     const [imgUri, setImgUri] = useState(null);
+    const [signatureImg, setSignatureImg] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    
+
+
+    function handleSignatureSave(signatureB64) {
+        setSignatureImg(signatureB64);
+        setModalVisible(false);
+    }
 
 
     function handleSubmit(){
@@ -104,18 +114,30 @@ export default function New(){
     async function handleAdd() {
         Keyboard.dismiss();
 
-        await api.post('/receive', {
-            description: labelInput,
-            value: Number(valueInput),
-            type: type,
-            date: format(new Date(), 'dd/MM/yyyy'),
-            image: imgUri
-        })
+        try {
+            console.log("Enviando dados...");
+            const response = await api.post('/receive', {
+                description: labelInput,
+                value: Number(valueInput),
+                type: type,
+                date: format(new Date(), 'dd/MM/yyyy'),
+                image: imgUri, 
+                signature: signatureImg
+            });
 
-        setLabelInput('');
-        setValueInput('');
-        setImgUri(null);
-        navigation.navigate('Home')
+            console.log("Resposta da API:", response.data);
+
+            setLabelInput('');
+            setValueInput('');
+            setImgUri(null);
+            setSignatureImg(null);
+            
+            // Use goBack() ou certifique-se que o Home vai recarregar
+            navigation.goBack(); 
+        } catch (error) {
+            console.error("Erro ao registrar:", error.response?.data || error.message);
+            Alert.alert("Erro", "Não foi possível registrar. Verifique o tamanho das imagens.");
+        }
     }
 
 
@@ -151,6 +173,23 @@ export default function New(){
                         </SubmitText>
                     </TouchableOpacity>
 
+                    <TouchableOpacity
+                        onPress={() => setModalVisible(true)}
+                        style={{ backgroundColor: '#fff', width: '90%', height: 50, justifyContent: 'center', alignItems: 'center', borderRadius: 8, marginBottom: 25 }}
+                    >
+                        <SubmitText style={{ color: '#5e5e5eff', fontSize: 16 }}>
+                            {signatureImg ? "Assinatura registrada ✓" : "Coletar Assinatura Digital"}
+                        </SubmitText>
+                    </TouchableOpacity>
+
+                    {signatureImg && (
+                        <Image 
+                            source={{ uri: signatureImg }} 
+                            style={{ width: 150, height: 80, borderRadius: 8, marginBottom: 10, backgroundColor: '#eee' }}
+                            resizeMode="contain"
+                        />
+                    )}
+
                     {imgUri && (
                         <Image 
                         source={{ uri: imgUri }} style={{ width: 100, height: 100, borderRadius: 8, marginBottom: 10 }}
@@ -166,6 +205,12 @@ export default function New(){
                     </SubmitButton>
 
                 </SafeAreaView>
+
+                <SignatureModal 
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    onSave={handleSignatureSave}
+                />
             </Background>
         </TouchableWithoutFeedback>
     )
