@@ -114,7 +114,7 @@ export default function Homes(){
             />
 
             <Modal
-            visible={modalVisible}
+            visible={detailModalVisible}
             animationType="fade"
             transparent={true}
             >

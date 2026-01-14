@@ -8,11 +8,13 @@ export const Background = styled.View`
 export const Input = styled.TextInput`
     height: 50px;
     width: 90%;
-    background-color: #fff;
+    background-color: #121212;
     font-size: 17px;
     padding: 8px;
     margin-bottom: 14px;
     border-radius: 5px;
+    color: #fff;
+
 `;
 
 export const SubmitButton = styled.TouchableOpacity`

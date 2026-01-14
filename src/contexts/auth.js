@@ -2,6 +2,7 @@ import React, {createContext, useState, useEffect} from "react";
 import api from "../services/api";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as LocalAuthentication from 'expo-local-authentication';
 
 export const AuthContext = createContext({});
 
@@ -15,19 +16,30 @@ function AuthProvider({ children }) {
         async function loadStogare(){
             const storageUser = await AsyncStorage.getItem('@finToken');
 
+            
             if (storageUser){
-                const response = await api.get('/me', {
-                    headers:{
-                        'Authorization': `Bearer ${storageUser}`
-                    }
-                })
-                .catch(() => {
-                    setUser(null);
-                })
+                const bioAuth = await LocalAuthentication.authenticateAsync({
+                    promptMessage: "Acesse suas finanças",
+                    fallbackLabel: "Usar senha"
+                });
 
-            api.defaults.headers['Authorization'] = `Bearer ${storageUser}`;
-            setUser(response.data);
-            setLoading(false);
+                if (!bioAuth.success) {
+                    setLoading(false);
+                    return;
+                }
+                try {
+                    const response = await api.get('/me', {
+                        headers:{
+                            'Authorization': `Bearer ${storageUser}`
+                        }
+                    });
+                    api.defaults.headers['Authorization'] = `Bearer ${storageUser}`;
+                    setUser(response.data);
+                } catch( error) {
+                    console.log("Token inválido ou erro na API");
+                    setUser(null)
+                    await AsyncStorage.removeItem('@finToken');
+                }
             }
             
             setLoading(false);
